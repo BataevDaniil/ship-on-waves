@@ -1,7 +1,0 @@
-**/tasks/**/*
-**/__test__/**/*.test.*
-**/*.test.*
-**/build/**/*
-**/node_modules/**/*
-flow-typed/**/*
-gulpfile.js
