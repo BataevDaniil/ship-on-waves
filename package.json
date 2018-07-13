@@ -13,6 +13,9 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "babel-preset-flow": "^6.23.0",
+    "ramda": "^0.25.0",
+    "svg.js": "^2.6.5"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

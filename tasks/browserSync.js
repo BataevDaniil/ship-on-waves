@@ -12,8 +12,6 @@ const browserSyncConfig = {
 	server: {
 		baseDir: config.browserSync.baseDir,
 		// directory: true
-		routes: {
-		}
 	}
 };
 
