@@ -12,10 +12,9 @@ class PlotCubicSpline extends PlotBase {
 
 	draw() {
 		const points = [];
-		for (let x = this.reallyScope.a; x < this.reallyScope.b - this.reallyScope.a; x++)
+		for (let x = this.reallyScope.a; x < this.reallyScope.b; x++)
 			points.push([x, this.y(x)]);
 		this.polyline = this.canvas.polyline(points).stroke({ width: 10 }).fill('none');
-		console.log(this);
 	}
 
 	y = x =>
