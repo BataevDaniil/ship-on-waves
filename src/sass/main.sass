@@ -4,6 +4,24 @@
 body
 	margin: 0 auto
 	width: 1300px
+	padding-top: 20px
+.btn-edit
+	width: 100px
+	border-radius: 7px
+	text-align: center
+	font: 22px "Myriad Pro"
+	background: #6ED9BD
+	padding: 10px 20px
+	margin: 0 auto
+	&:hover
+		cursor: pointer
+		background: #49cfac;
+.active
+	background-color: #bc443e
+	color: white
+	&:hover
+		cursor: pointer
+		background: #8c3531;
 #ship-on-waves
 	position: relative
 	.text
@@ -15,6 +33,7 @@ body
 		border: none
 		width: 100px
 		text-align: center
+		background: rgba(0,0,0,0)
 		&-active
 			background-color: #eb4f47
 			color: white

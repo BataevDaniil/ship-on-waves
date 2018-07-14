@@ -1,9 +1,12 @@
 class Text {
-	constructor(insert, point, text) {
+	constructor(insert, point, text, isDisabled = true) {
 		this.point = point;
 		this.insert = insert;
 		this.element = document.createElement('input');
 		this.noneActive();
+		if (isDisabled)
+			this.disabled();
+		else this.noneDisabled();
 		this.element.value = text;
 		this.insert.appendChild(this.element);
 
