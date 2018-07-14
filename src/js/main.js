@@ -9,6 +9,8 @@ const width = 1300,
 	  height = 500;
 const canvas = SVG('ship-on-waves').size(width, height);
 
+defaultPoints.push({ x: -20, y: 20 });
+defaultPoints.push({ x: width + 20, y: 400 });
 const plotCubicSpline = new PlotCubicSpline(canvas, defaultPoints, {
 	a: Math.min(...defaultPoints.map(point => point.x)),
 	b: Math.max(...defaultPoints.map(point => point.x)),
