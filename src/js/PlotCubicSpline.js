@@ -14,11 +14,24 @@ class PlotCubicSpline extends PlotBase {
 		const points = [];
 		for (let x = this.reallyScope.a; x < this.reallyScope.b; x++)
 			points.push([x, this.y(x)]);
-		this.polyline = this.canvas.polyline(points).stroke({ width: 10 }).fill('none');
+
+		if (!this.symbolCubicSpline) {
+			this.symbolCubicSpline = this.canvas.symbol();
+			this.canvas.use(this.symbolCubicSpline);
+		}
+		this.polyline = this.symbolCubicSpline
+			.polyline(points)
+			.stroke({
+				width: 6,
+				dasharray: '1 11',
+				color: '#ddedf4',
+				linecap: 'round',
+			})
+			.fill('none');
 	}
 
 	y = x =>
-		 this.canvas.height() - this.mathMapReallyY(this.spline.y(this.reallyMapMathX(x)));
+		this.canvas.height() - this.mathMapReallyY(this.spline.y(this.reallyMapMathX(x)));
 
 	setMathScope() {
 		this.mathScope = {

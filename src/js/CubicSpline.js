@@ -27,7 +27,7 @@ class CubicSpline {
 				const deltaY = this.points[1].y - this.points[0].y;
 				const deltaX = this.points[1].x - this.points[0].x;
 
-				df[0] = deltaY / deltaX;
+				df[0] = deltaY / deltaX || 10e5;
 			}
 			{
 				const deltaX = this.points[this.points.length - 1].x
