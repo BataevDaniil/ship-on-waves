@@ -34,9 +34,27 @@ class Canvas {
 
 		this.current = this.pointAndTextes[0];
 		this.ship = new Ship(canvas, { x: this.current.point.x, y: this.canvas.height() - this.current.point.y });
+		this.canvas.on('click', this.newPointAndText);
 	}
-	newPointAndText = () => {
+	newPointAndText = e => {
+		if (!this.isEdit)
+			return;
+		if (this.canvas.node !== e.target)
+			return;
 
+		const point = {
+			x: e.x - this.canvas.node.parentElement.offsetLeft,
+			y: this.canvas.height() - (e.y - this.canvas.node.parentElement.offsetTop),
+		};
+		const newElement = {
+			text: new Text(document.getElementById('ship-on-waves'), point, 'text', this.callBackMotionShipeAndTextActive(this)),
+			point: new Point(this.canvas, point, this.callBackDragAndDropPoint(this), this.callBackRemovePoint(this)),
+		};
+		newElement.point.draw();
+		newElement.point.edit();
+		newElement.text.noneDisabled();
+		this.pointAndTextes.push(newElement);
+		this.cubicSplineUpdatePoints(this);
 	}
 
 	callBackMotionShipeAndTextActive(self) {
@@ -56,11 +74,7 @@ class Canvas {
 				return false;
 			self.pointAndTextes = self.pointAndTextes.filter(a => (a.point === this ? (a.text.remove(), false) : true));
 
-			const points = self.pointAndTextes.map(a => ({ x: a.point.x, y: a.point.y }));
-			points.push({ x: -20, y: 20 });
-			points.push({ x: self.canvas.width() + 20, y: 400 });
-			self.plotCubicSpline.update(points);
-			self.plotCubicSpline.draw();
+			self.cubicSplineUpdatePoints(self);
 
 			if (self.current.point === this) {
 				self.current = self.pointAndTextes[0];
@@ -77,6 +91,13 @@ class Canvas {
 		};
 	}
 
+	cubicSplineUpdatePoints(self) {
+		const points = self.pointAndTextes.map(a => ({ x: a.point.x, y: a.point.y }));
+		points.push({ x: -20, y: 20 });
+		points.push({ x: self.canvas.width() + 20, y: 400 });
+		self.plotCubicSpline.update(points);
+		self.plotCubicSpline.draw();
+	}
 
 	callBackDragAndDropPoint(self) {
 		return function (point) {

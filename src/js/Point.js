@@ -74,7 +74,7 @@ class Point {
 		this.point = { x, y };
 		this.reallyPoint.move(this.point.x, this.point.y);
 		this.callBackDragAndDrop({
-			x: this.x + this.diameter / 2,
+			x: this.point.x + this.diameter / 2,
 			y: this.canvas.height() - this.point.y - this.diameter / 2,
 		});
 	}
