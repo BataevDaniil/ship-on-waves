@@ -18,6 +18,7 @@ class Ship {
 			.rotate(this.beginRotateForHorizontalAlign);
 		this.pos = point;
 		this.setPos(point);
+		this.duration = 'right';
 	}
 
 	get x() {

@@ -37,6 +37,10 @@ class Canvas {
 						x: this.ship.x,
 						y: this.plotCubicSpline.y(this.ship.x),
 					});
+					this.ship.setPos({
+						x: this.ship.x + 1e-3,
+						y: this.plotCubicSpline.y(this.ship.x + 1e-3),
+					});
 				}),
 			};
 		for (let i = 0; i < this.pointAndTextes.length; i++)
