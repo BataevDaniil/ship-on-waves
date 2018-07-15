@@ -1,6 +1,7 @@
 class Point {
 	diameter = 24;
 	isPress = false;
+	isEdit = false;
 	constructor(canvas, point, callBackDragAndDrop, callBackRemove) {
 		this.callBackDragAndDrop = callBackDragAndDrop;
 		this.callBackRemove = callBackRemove;
@@ -8,6 +9,14 @@ class Point {
 		this.point = point;
 		document.addEventListener('mouseup', this.handlerDocumentMouseUp);
 		document.addEventListener('mousemove', this.handlerDocumentMouseMove);
+	}
+
+	get x() {
+		return this.point.x;
+	}
+
+	get y() {
+		return this.point.y;
 	}
 
 	draw() {
@@ -29,8 +38,11 @@ class Point {
 		this.remove();
 	}
 
+	edit = () => this.isEdit = true;
+	noneEdit = () => this.isEdit = false;
+
 	handlerMouseDown = e => {
-		this.isPress = true;
+		this.isPress = this.isEdit;
 		e.target.ownerDocument.defaultView.getSelection().removeAllRanges();
 	};
 
@@ -56,7 +68,10 @@ class Point {
 
 		this.point = { x, y };
 		this.reallyPoint.move(this.point.x, this.point.y);
-		this.callBackDragAndDrop(this.point);
+		this.callBackDragAndDrop({
+			x: this.x + this.diameter / 2,
+			y: this.canvas.height() - this.point.y - this.diameter / 2,
+		});
 	}
 }
 

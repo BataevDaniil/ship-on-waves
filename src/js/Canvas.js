@@ -6,47 +6,98 @@ import defaultPoints from './defaultPoints.json';
 import defaultText from './defaultText.json';
 
 class Canvas {
+	isEdit = false;
+	setIntervalId;
 	constructor(canvas) {
 		this.canvas = canvas;
-		defaultPoints.push({ x: -20, y: 20 });
-		defaultPoints.push({ x: canvas.width() + 20, y: 400 });
-		const plotCubicSpline = new PlotCubicSpline(canvas, defaultPoints, {
-			a: Math.min(...defaultPoints.map(point => point.x)),
-			b: Math.max(...defaultPoints.map(point => point.x)),
-			c: Math.min(...defaultPoints.map(point => point.y)),
-			d: Math.max(...defaultPoints.map(point => point.y)),
+
+
+		const tmp = [...defaultPoints, { x: canvas.width() + 20, y: 400 }, { x: -20, y: 20 }];
+		this.plotCubicSpline = new PlotCubicSpline(canvas, tmp, {
+			a: Math.min(...tmp.map(point => point.x)),
+			b: Math.max(...tmp.map(point => point.x)),
+			c: Math.min(...tmp.map(point => point.y)),
+			d: Math.max(...tmp.map(point => point.y)),
 		});
-		plotCubicSpline.draw();
+		this.plotCubicSpline.draw();
+		this.pointAndTextes = [];
+		for (let i = 0; i < defaultPoints.length; i++)
+			this.pointAndTextes[i] = {
+				text: new Text(document.getElementById('ship-on-waves'), defaultPoints[i], defaultText[i]),
+				point: new Point(this.canvas, defaultPoints[i], point => {
+					this.pointAndTextes[i].point.point = point;
+					this.pointAndTextes[i].text.setPoint(point || { x: -1000, y: -1000 });
+					// two point add outside canvas
+					const points = this.pointAndTextes.map(a => ({ x: a.point.x, y: a.point.y }));
+					points.push({ x: -20, y: 20 });
+					points.push({ x: canvas.width() + 20, y: 400 });
+					this.plotCubicSpline.update(points);
+					this.plotCubicSpline.draw();
+					this.ship.setPos({
+						x: this.ship.x,
+						y: this.plotCubicSpline.y(this.ship.x),
+					});
+				}),
+			};
+		for (let i = 0; i < this.pointAndTextes.length; i++)
+			this.pointAndTextes[i].point.draw();
 
-		const textes = defaultText.map((text, index) => new Text(document.getElementById('ship-on-waves'), defaultPoints[index], text));
-		this.textes = textes;
 
-		const newPoints = defaultPoints;
-		const points = defaultPoints.map((point, index) => new Point(canvas, point, function ({ x, y }) {
-			newPoints[index] = { x: x + this.diameter / 2, y: canvas.height() - y - this.diameter / 2 };
-			textes[index].setPoint(newPoints[index] || { x: -1000, y: -1000 });
-			plotCubicSpline.update(newPoints);
-			plotCubicSpline.draw();
-		}, (() => {
-				// points.filter((point, i) => (this === point));
+		this.pointAndTextes[0].text.active();
+		for (let i = 0; i < this.pointAndTextes.length; i++)
+			this.pointAndTextes[i].text.wrapperForEvent.addEventListener('click', () => {
+				this.pointAndTextes.find(a => a.text === this.current.text).text.noneActive();
+				this.pointAndTextes[i].text.active();
+				this.motionShipStop();
+				this.motionShipToPoint(this.pointAndTextes[i].point);
+				this.current = this.pointAndTextes[i];
+			});
 
-				// points.map((point, index) => new Point(canvas, point, function ({ x, y }) {
-				// 	newPoints[index] = { x: x + this.diameter / 2, y: canvas.height() - y - this.diameter / 2 };
-				// 	plotCubicSpline.update(newPoints);
-				// 	plotCubicSpline.draw();
-				// }));
-				// plotCubicSpline.update(newPoints);
-				// plotCubicSpline.draw();
-			})));
+		this.current = this.pointAndTextes[0];
+		this.ship = new Ship(canvas, { x: this.current.point.x, y: this.canvas.height() - this.current.point.y });
+	}
 
-		points.map(point => point.draw());
+	motionShipToPoint = point => {
+		let x = this.ship.x;
+		if (this.ship.x < point.x)
+			this.setIntervalId = setInterval(() => {
+				this.ship.setPos({
+					x,
+					y: this.plotCubicSpline.y(x),
+				});
+				if (x < point.x)
+					x += 1;
+				else clearInterval(this.setIntervalId);
+			}, 10);
+		else
+			this.setIntervalId = setInterval(() => {
+				this.ship.setPos({
+					x,
+					y: this.plotCubicSpline.y(x),
+				});
+				if (point.x < x)
+					x -= 1;
+				else clearInterval(this.setIntervalId);
+			}, 10);
+	}
+
+	motionShipStop = () => {
+		clearInterval(this.setIntervalId);
 	}
 
 	edit = () => {
-		this.textes.map(text => text.noneDisabled());
+		this.isEdit = true;
+		for (let i = 0; i < this.pointAndTextes.length; i++) {
+			this.pointAndTextes[i].text.noneDisabled();
+			this.pointAndTextes[i].point.edit();
+		}
 	}
 	noneEdit = () => {
-		this.textes.map(text => text.disabled());
+		this.isEdit = false;
+		for (let i = 0; i < this.pointAndTextes.length; i++) {
+			this.pointAndTextes[i].text.disabled();
+			this.pointAndTextes[i].point.noneEdit();
+		}
 	}
 }
 
