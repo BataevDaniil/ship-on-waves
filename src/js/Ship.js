@@ -12,14 +12,19 @@ class Ship {
 	constructor(canvas, point = { x: 0, y: 0 }) {
 		this.canvas = canvas;
 		this.wrapper = this.canvas.symbol();
-		this.canvas.use(this.wrapper);
+
+		this.canvas.use(this.wrapper)
+			.on('mousedown', this.cancelDragImage);
 		this.ship = this.wrapper.image(this.pathToImage, this.widthShipe, this.heightShipe);
 		this.ship
-			.rotate(this.beginRotateForHorizontalAlign);
+			.rotate(this.beginRotateForHorizontalAlign)
+			.on('mousedown', () => false);
 		this.pos = point;
 		this.setPos(point);
 		this.duration = 'right';
 	}
+
+	cancelDragImage = e => e.preventDefault();
 
 	get x() {
 		return this.pos.x;
