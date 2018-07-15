@@ -1,12 +1,11 @@
 # Description
 
-Необходимо разработать страницу, на которой:
-
-1) В зависимости от выбранного года меняется контент в нижнем блоке (Это реализация раздела истории)
-
-2) Кораблик должен перемещаться от выбранного года к вновь выбранному по траектории кривой. То есть, не прямо, не фейдом, а именно движением по кривой. 
-
-3) Перемещаться кораблик должен как на следующий год, так и через один год, от 2001 до 2013 с одинаковой скоростью. 
+* When pressed on text a ship begin motion to appropriate point a text.
+* In mode edit you can:
+  * Drag and drop point.
+  * Remove point by double click.
+  * Edit text.
+  * Create new point in mode edit when click on empty place.
 
 # Build
 
