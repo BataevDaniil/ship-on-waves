@@ -34,7 +34,10 @@ class Point {
 	remove = () => this.reallyPoint.remove();
 
 	handlerDblClick = () => {
-		this.callBackRemove();
+		if (!this.isEdit)
+			return;
+		if (this.callBackRemove() === false)
+			return;
 		this.remove();
 	}
 
@@ -42,7 +45,9 @@ class Point {
 	noneEdit = () => this.isEdit = false;
 
 	handlerMouseDown = e => {
-		this.isPress = this.isEdit;
+		if (!this.isEdit)
+			return;
+		this.isPress = true;
 		e.target.ownerDocument.defaultView.getSelection().removeAllRanges();
 	};
 

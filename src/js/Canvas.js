@@ -11,7 +11,6 @@ class Canvas {
 	constructor(canvas) {
 		this.canvas = canvas;
 
-
 		const tmp = [...defaultPoints, { x: canvas.width() + 20, y: 400 }, { x: -20, y: 20 }];
 		this.plotCubicSpline = new PlotCubicSpline(canvas, tmp, {
 			a: Math.min(...tmp.map(point => point.x)),
@@ -20,45 +19,85 @@ class Canvas {
 			d: Math.max(...tmp.map(point => point.y)),
 		});
 		this.plotCubicSpline.draw();
+
+		const self = this;
 		this.pointAndTextes = [];
 		for (let i = 0; i < defaultPoints.length; i++)
 			this.pointAndTextes[i] = {
-				text: new Text(document.getElementById('ship-on-waves'), defaultPoints[i], defaultText[i]),
-				point: new Point(this.canvas, defaultPoints[i], point => {
-					this.pointAndTextes[i].point.point = point;
-					this.pointAndTextes[i].text.setPoint(point || { x: -1000, y: -1000 });
-					// two point add outside canvas
-					const points = this.pointAndTextes.map(a => ({ x: a.point.x, y: a.point.y }));
-					points.push({ x: -20, y: 20 });
-					points.push({ x: canvas.width() + 20, y: 400 });
-					this.plotCubicSpline.update(points);
-					this.plotCubicSpline.draw();
-					this.ship.setPos({
-						x: this.ship.x,
-						y: this.plotCubicSpline.y(this.ship.x),
-					});
-					this.ship.setPos({
-						x: this.ship.x + 1e-3,
-						y: this.plotCubicSpline.y(this.ship.x + 1e-3),
-					});
-				}),
+				text: new Text(document.getElementById('ship-on-waves'), defaultPoints[i], defaultText[i], this.callBackMotionShipeAndTextActive(self)),
+				point: new Point(this.canvas, defaultPoints[i], this.callBackDragAndDropPoint(self), this.callBackRemovePoint(self)),
 			};
 		for (let i = 0; i < this.pointAndTextes.length; i++)
 			this.pointAndTextes[i].point.draw();
 
-
 		this.pointAndTextes[0].text.active();
-		for (let i = 0; i < this.pointAndTextes.length; i++)
-			this.pointAndTextes[i].text.wrapperForEvent.addEventListener('click', () => {
-				this.pointAndTextes.find(a => a.text === this.current.text).text.noneActive();
-				this.pointAndTextes[i].text.active();
-				this.motionShipStop();
-				this.motionShipToPoint(this.pointAndTextes[i].point);
-				this.current = this.pointAndTextes[i];
-			});
 
 		this.current = this.pointAndTextes[0];
 		this.ship = new Ship(canvas, { x: this.current.point.x, y: this.canvas.height() - this.current.point.y });
+	}
+	newPointAndText = () => {
+
+	}
+
+	callBackMotionShipeAndTextActive(self) {
+		return function () {
+			const pointAndText = self.pointAndTextes.find(a => a.text === this);
+			self.current.text.noneActive();
+			pointAndText.text.active();
+			self.motionShipStop();
+			self.motionShipToPoint(pointAndText.point);
+			self.current = pointAndText;
+		};
+	}
+
+	callBackRemovePoint(self) {
+		return function () {
+			if (self.pointAndTextes.length === 1)
+				return false;
+			self.pointAndTextes = self.pointAndTextes.filter(a => (a.point === this ? (a.text.remove(), false) : true));
+
+			const points = self.pointAndTextes.map(a => ({ x: a.point.x, y: a.point.y }));
+			points.push({ x: -20, y: 20 });
+			points.push({ x: self.canvas.width() + 20, y: 400 });
+			self.plotCubicSpline.update(points);
+			self.plotCubicSpline.draw();
+
+			if (self.current.point === this) {
+				self.current = self.pointAndTextes[0];
+				self.current.text.active();
+				self.ship.setPos({
+					x: self.current.point.x,
+					y: self.plotCubicSpline.y(self.current.point.x),
+				});
+				self.ship.setPos({
+					x: self.ship.x + 1e-3,
+					y: self.plotCubicSpline.y(self.ship.x + 1e-3),
+				});
+			}
+		};
+	}
+
+
+	callBackDragAndDropPoint(self) {
+		return function (point) {
+			const pointAndText = self.pointAndTextes.find(a => a.point === this);
+			pointAndText.point.point = point;
+			pointAndText.text.setPoint(point || { x: -1000, y: -1000 });
+
+			const points = self.pointAndTextes.map(a => ({ x: a.point.x, y: a.point.y }));
+			points.push({ x: -20, y: 20 });
+			points.push({ x: self.canvas.width() + 20, y: 400 });
+			self.plotCubicSpline.update(points);
+			self.plotCubicSpline.draw();
+			self.ship.setPos({
+				x: self.ship.x,
+				y: self.plotCubicSpline.y(self.ship.x),
+			});
+			self.ship.setPos({
+				x: self.ship.x + 1e-3,
+				y: self.plotCubicSpline.y(self.ship.x + 1e-3),
+			});
+		};
 	}
 
 	motionShipToPoint = point => {

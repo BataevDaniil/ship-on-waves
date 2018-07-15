@@ -1,5 +1,6 @@
 class Text {
-	constructor(insert, point, text, isDisabled = true) {
+	constructor(insert, point, text, callBackClick, isDisabled = true) {
+		this.callBackClick = callBackClick;
 		this.point = point;
 		this.insert = insert;
 		this.element = document.createElement('input');
@@ -30,11 +31,14 @@ class Text {
 			bottom: ${point.y - this.element.offsetHeight - 9 - 12}px;
 		`;
 		this.element.addEventListener('mousemove', this.handlerMouseDown);
+		this.wrapperForEvent.addEventListener('click', () => this.callBackClick());
 	}
 
 	get value() {
 		return this.element.value;
 	}
+
+	remove = () => this.wrapper.remove();
 
 	active = () =>
 		this.element.setAttribute('class', 'text text-active');
