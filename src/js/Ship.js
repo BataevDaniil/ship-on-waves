@@ -36,6 +36,7 @@ class Ship {
 		this.duration = point.x < this.pos.x ? 'left' : 'right';
 		let rotation = Math.asin((point.y - this.pos.y) / this.hypotenuse(point.x - this.pos.x, point.y - this.pos.y)) || 0;
 		rotation = this.radianToDegree(rotation) + this.beginRotateForHorizontalAlign;
+		this.angle = rotation;
 
 		this.wrapper.transform({
 			a: this.duration === 'left' ? -1 : 1,

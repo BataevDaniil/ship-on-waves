@@ -129,8 +129,9 @@ class Canvas {
 					x,
 					y: this.plotCubicSpline.y(x),
 				});
+				console.log('angle = ', this.ship.angle);
 				if (x < point.x)
-					x += 1;
+					x += 1 + this.ship.angle / 100;
 				else clearInterval(this.setIntervalId);
 			}, 10);
 		else
@@ -139,8 +140,9 @@ class Canvas {
 					x,
 					y: this.plotCubicSpline.y(x),
 				});
+				console.log('angle = ', this.ship.angle);
 				if (point.x < x)
-					x -= 1;
+					x -= 1 + this.ship.angle / 100;
 				else clearInterval(this.setIntervalId);
 			}, 10);
 	}
